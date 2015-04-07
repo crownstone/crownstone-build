@@ -53,14 +53,15 @@ for d in ${bluenetConfigsDir}/* ; do
 	rm -r "$d/build"
 	
 	# Clean the logs
-	rm "$logFullDir/softdevice\*"
-	rm "$logFullDir/firmware\*"
+	cd "$logFullDir"
+	rm softdevice*
+	rm firmware*
 	
 	# Build the code
 	cd "$bluenetDir/scripts"
 	./softdevice.sh build > "$logFullDir/softdevice_make.log" 2> "$logFullDir/softdevice_make_err.log"
 	res=$?
-	checkForError $? "softdevice build"
+	checkForError $res "softdevice build"
 	if [ "$?" != "0" ]; then exit 1; fi
 	
 	./firmware.sh build crownstone > "$logFullDir/firmware_make.log" 2> "$logFullDir/firmware_make_err.log"
@@ -72,7 +73,7 @@ for d in ${bluenetConfigsDir}/* ; do
 	cd "$bluenetDir/scripts"
 	./softdevice.sh upload > "$logFullDir/softdevice_upload.log" 2> "$logFullDir/softdevice_upload_err.log"
 	res=$?
-	checkForError $? "softdevice upload"
+	checkForError $res "softdevice upload"
 	if [ "$?" != "0" ]; then exit 1; fi
 	
 	./firmware.sh upload crownstone > "$logFullDir/firmware_upload.log" 2> "$logFullDir/firmware_upload_err.log"
