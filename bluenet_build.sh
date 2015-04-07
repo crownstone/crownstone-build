@@ -4,8 +4,8 @@ path="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 echoerr() { cat <<< "$@" 1>&2; }
 
 # Settings
-bluenetdir=/home/crownstone/bluenet
-configsdir=/home/crownstone/bluenet_configs
+bluenetDir=$HOME/bluenet
+bluenetConfigsDir=$path/bluenet_configs
 logdir=$path/logs
 defaultEmail="bart@dobots.nl"
 
@@ -22,7 +22,7 @@ function checkForError {
 
 mkdir -p "$logdir"
 
-cd "$bluenetdir"
+cd "$bluenetDir"
 #cd /home
 git pull
 res=$?
@@ -32,17 +32,28 @@ checkForError $res "Git pull"
 #	exit 1
 #fi
 
-lastCommitEmail="$( git log | grep Author | head -n1 | grep -oP "<[^>]+>" | sed -re 's/[<>]//g')"
+lastCommitEmail="$( git log | grep -P '^Author:\s' | head -n1 | grep -oP '<[^>]+>' | sed -re 's/[<>]//g')"
+newCommitHash="$(git log | grep -P '^commit\s' | head -n1 | cut -d ' ' -f2)"
+if [ -e "$path/lastCommit.sh" ]; then
+	source "$path/lastCommit.sh"
+	if [ "$lastCommitHash" == "$newCommitHash" ]; then
+		echo "No new commit found!"
+		exit 0
+	fi
+fi
+echo "New commit found!"
+echo "lastCommitHash=${newCommitHash}" > "$path/lastCommit.sh"
 
-for d in ${configsdir}/* ; do
+for d in ${bluenetConfigsDir}/* ; do
 	# Set config dir
 	export BLUENET_CONFIG_DIR="$d"
 
 	# Remove build dir to be sure we start with a clean build
-	rm -r "$bluenetdir/build"
+	rm -r "$bluenetDir/build"
+	rm -r "$d/build"
 
 	# Build the code
-	cd "$bluenetdir/scripts"
+	cd "$bluenetDir/scripts"
 	./softdevice.sh build > "$logdir/make.log" 2> "$logdir/make_err.log"
 	res=$?
 	checkForError $? "softdevice build"
@@ -52,6 +63,8 @@ for d in ${configsdir}/* ; do
 	res=$?
 	checkForError $res "firmware build"
 	echo "Firmware build result: $res"
+	
+	
 
 done
 
