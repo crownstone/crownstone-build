@@ -6,20 +6,21 @@ echoerr() { cat <<< "$@" 1>&2; }
 # Settings
 bluenetdir=/home/crownstone/bluenet
 configsdir=/home/crownstone/bluenet_configs
-logdir=$path
+logdir=$path/logs
 defaultEmail="bart@dobots.nl"
-
 
 lastCommitEmail=$defaultEmail
 function checkForError {
 #	echo $lastCommitEmail
 	if [ "$1" != "0" ]; then
-		mail -s "crownstone build failed" $lastCommitEmail <<< "Failed: $2"
+		tar -cf "${path}/log.tar" "$logdir"
+		p7zip "${path}/log.tar"
+		mail -A "${path/log.tar.7z" -s "crownstone build failed" $lastCommitEmail <<< "Failed: $2"
 		exit 1
 	fi
 }
 
-
+mkdir -p "$logdir"
 
 cd "$bluenetdir"
 #cd /home
