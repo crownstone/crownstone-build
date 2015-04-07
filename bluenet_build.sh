@@ -9,6 +9,7 @@ bluenetConfigsDir=$path/bluenet_configs
 logdir=$path/logs
 defaultEmail="bart@dobots.nl"
 
+
 lastCommitEmail=$defaultEmail
 function checkForError {
 #	echo $lastCommitEmail
@@ -23,14 +24,9 @@ function checkForError {
 mkdir -p "$logdir"
 
 cd "$bluenetDir"
-#cd /home
 git pull
 res=$?
 checkForError $res "Git pull"
-#if [ "$res" != "0" ]; then
-#	echoerr "Git pull failed!"
-#	exit 1
-#fi
 
 lastCommitEmail="$( git log | grep -P '^Author:\s' | head -n1 | grep -oP '<[^>]+>' | sed -re 's/[<>]//g')"
 newCommitHash="$(git log | grep -P '^commit\s' | head -n1 | cut -d ' ' -f2)"
@@ -41,31 +37,44 @@ if [ -e "$path/lastCommit.sh" ]; then
 		exit 0
 	fi
 fi
-echo "New commit found!"
 echo "lastCommitHash=${newCommitHash}" > "$path/lastCommit.sh"
+echo "New commit found!"
 
 for d in ${bluenetConfigsDir}/* ; do
 	# Set config dir
 	export BLUENET_CONFIG_DIR="$d"
-
+	
 	# Remove build dir to be sure we start with a clean build
 	rm -r "$bluenetDir/build"
 	rm -r "$d/build"
-
+	
+	# Clean the logs
+	rm "$logdir/softdevice*"
+	rm "$logdir/firmware*"
+	
 	# Build the code
 	cd "$bluenetDir/scripts"
-	./softdevice.sh build > "$logdir/make.log" 2> "$logdir/make_err.log"
+	./softdevice.sh build > "$logdir/softdevice_make.log" 2> "$logdir/softdevice_make_err.log"
 	res=$?
 	checkForError $? "softdevice build"
 	echo "Softdevice build result: $res"
-
-	./firmware.sh build crownstone > "$logdir/make.log" 2> "$logdir/make_err.log"
+	
+	./firmware.sh build crownstone > "$logdir/firmware_make.log" 2> "$logdir/firmware_make_err.log"
 	res=$?
 	checkForError $res "firmware build"
 	echo "Firmware build result: $res"
 	
+	# Upload the code
+	cd "$bluenetDir/scripts"
+	./softdevice.sh upload > "$logdir/softdevice_upload.log" 2> "$logdir/softdevice_upload_err.log"
+	res=$?
+	checkForError $? "softdevice upload"
+	echo "Softdevice upload result: $res"
 	
-
+	./firmware.sh upload crownstone > "$logdir/firmware_upload.log" 2> "$logdir/firmware_upload_err.log"
+	res=$?
+	checkForError $res "firmware upload"
+	echo "Firmware upload result: $res"
 done
 
 exit 0
