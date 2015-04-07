@@ -17,8 +17,9 @@ function checkForError {
 		tar -C "$path" -cf "${path}/log.tar" "$logdir"
 		p7zip "${path}/log.tar"
 		mail -A "${path}/log.tar.7z" -s "crownstone build failed" $lastCommitEmail <<< "Failed: $2"
-		exit 1
+		return 1
 	fi
+	return 0
 }
 
 mkdir -p "$logdir"
@@ -27,6 +28,7 @@ cd "$bluenetDir"
 git pull
 res=$?
 checkForError $res "Git pull"
+if [ "$?" != "0" ]; then exit 1; fi
 
 lastCommitEmail="$( git log | grep -P '^Author:\s' | head -n1 | grep -oP '<[^>]+>' | sed -re 's/[<>]//g')"
 newCommitHash="$(git log | grep -P '^commit\s' | head -n1 | cut -d ' ' -f2)"
@@ -57,11 +59,13 @@ for d in ${bluenetConfigsDir}/* ; do
 	./softdevice.sh build > "$logdir/softdevice_make.log" 2> "$logdir/softdevice_make_err.log"
 	res=$?
 	checkForError $? "softdevice build"
+	if [ "$?" != "0" ]; then exit 1; fi
 	echo "Softdevice build result: $res"
 	
 	./firmware.sh build crownstone > "$logdir/firmware_make.log" 2> "$logdir/firmware_make_err.log"
 	res=$?
 	checkForError $res "firmware build"
+	if [ "$?" != "0" ]; then exit 1; fi
 	echo "Firmware build result: $res"
 	
 	# Upload the code
@@ -69,11 +73,13 @@ for d in ${bluenetConfigsDir}/* ; do
 	./softdevice.sh upload > "$logdir/softdevice_upload.log" 2> "$logdir/softdevice_upload_err.log"
 	res=$?
 	checkForError $? "softdevice upload"
+	if [ "$?" != "0" ]; then exit 1; fi
 	echo "Softdevice upload result: $res"
 	
 	./firmware.sh upload crownstone > "$logdir/firmware_upload.log" 2> "$logdir/firmware_upload_err.log"
 	res=$?
 	checkForError $res "firmware upload"
+	if [ "$?" != "0" ]; then exit 1; fi
 	echo "Firmware upload result: $res"
 done
 
