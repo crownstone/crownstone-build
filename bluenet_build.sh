@@ -18,6 +18,7 @@ function checkForError {
 		tar -C "$path" -cf "${path}/log.tar" "$logDir"
 		p7zip "${path}/log.tar"
 		mail -A "${path}/log.tar.7z" -s "crownstone build failed" $lastCommitEmail <<< "Failed: $2"
+		echo "Sent a mail to $lastCommitEmail"
 		return 1
 	fi
 	return 0
