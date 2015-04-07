@@ -44,6 +44,8 @@ fi
 echo "lastCommitHash=${newCommitHash}" > "$path/lastCommit.sh"
 echo "New commit found!"
 
+mkdir -p "$bluenetConfigsDir/default"
+cp "$bluenetDir/CMakeBuild.config.default" "$bluenetConfigsDir/default/CMakeBuild.config"
 for d in ${bluenetConfigsDir}/* ; do
 	# Set config dir
 	export BLUENET_CONFIG_DIR="$d"
