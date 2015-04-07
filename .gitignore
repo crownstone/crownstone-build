@@ -1,3 +1,4 @@
 logs/
 bluenet_configs/**/build/
 log.tar.7z
+lastCommit.sh
