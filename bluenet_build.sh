@@ -6,15 +6,16 @@ echoerr() { cat <<< "$@" 1>&2; }
 # Settings
 bluenetDir=$HOME/bluenet
 bluenetConfigsDir=$path/bluenet_configs
-logdir=$path/logs
+logDir=logs
 defaultEmail="bart@dobots.nl"
 
 
+logFullDir="${path}/logs"
 lastCommitEmail=$defaultEmail
 function checkForError {
 #	echo $lastCommitEmail
 	if [ "$1" != "0" ]; then
-		tar -C "$path" -cf "${path}/log.tar" "$logdir"
+		tar -C "$path" -cf "${path}/log.tar" "$logDir"
 		p7zip "${path}/log.tar"
 		mail -A "${path}/log.tar.7z" -s "crownstone build failed" $lastCommitEmail <<< "Failed: $2"
 		return 1
@@ -22,7 +23,7 @@ function checkForError {
 	return 0
 }
 
-mkdir -p "$logdir"
+mkdir -p "logFullDir"
 
 cd "$bluenetDir"
 git pull
@@ -51,18 +52,18 @@ for d in ${bluenetConfigsDir}/* ; do
 	rm -r "$d/build"
 	
 	# Clean the logs
-	rm "$logdir/softdevice*"
-	rm "$logdir/firmware*"
+	rm "$logFullDir/softdevice*"
+	rm "$logFullDir/firmware*"
 	
 	# Build the code
 	cd "$bluenetDir/scripts"
-	./softdevice.sh build > "$logdir/softdevice_make.log" 2> "$logdir/softdevice_make_err.log"
+	./softdevice.sh build > "$logFullDir/softdevice_make.log" 2> "$logFullDir/softdevice_make_err.log"
 	res=$?
 	checkForError $? "softdevice build"
 	if [ "$?" != "0" ]; then exit 1; fi
 	echo "Softdevice build result: $res"
 	
-	./firmware.sh build crownstone > "$logdir/firmware_make.log" 2> "$logdir/firmware_make_err.log"
+	./firmware.sh build crownstone > "$logFullDir/firmware_make.log" 2> "$logFullDir/firmware_make_err.log"
 	res=$?
 	checkForError $res "firmware build"
 	if [ "$?" != "0" ]; then exit 1; fi
@@ -70,13 +71,13 @@ for d in ${bluenetConfigsDir}/* ; do
 	
 	# Upload the code
 	cd "$bluenetDir/scripts"
-	./softdevice.sh upload > "$logdir/softdevice_upload.log" 2> "$logdir/softdevice_upload_err.log"
+	./softdevice.sh upload > "$logFullDir/softdevice_upload.log" 2> "$logFullDir/softdevice_upload_err.log"
 	res=$?
 	checkForError $? "softdevice upload"
 	if [ "$?" != "0" ]; then exit 1; fi
 	echo "Softdevice upload result: $res"
 	
-	./firmware.sh upload crownstone > "$logdir/firmware_upload.log" 2> "$logdir/firmware_upload_err.log"
+	./firmware.sh upload crownstone > "$logFullDir/firmware_upload.log" 2> "$logFullDir/firmware_upload_err.log"
 	res=$?
 	checkForError $res "firmware upload"
 	if [ "$?" != "0" ]; then exit 1; fi
