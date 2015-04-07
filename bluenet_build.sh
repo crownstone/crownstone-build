@@ -75,8 +75,9 @@ for d in ${bluenetConfigsDir}/* ; do
 	cd "$bluenetDir/scripts"
 	./softdevice.sh upload > "$logFullDir/softdevice_upload.log" 2> "$logFullDir/softdevice_upload_err.log"
 	res=$?
-	checkForError $res "softdevice upload"
-	if [ "$?" != "0" ]; then exit 1; fi
+	echo "softdevice upload result: $res"
+#	checkForError $res "softdevice upload"
+#	if [ "$?" != "0" ]; then exit 1; fi
 	
 	./firmware.sh upload crownstone > "$logFullDir/firmware_upload.log" 2> "$logFullDir/firmware_upload_err.log"
 	res=$?
