@@ -8,7 +8,8 @@ bluenetDir=$HOME/bluenet
 bluenetConfigsDir=$path/bluenet_configs
 logDir=logs
 defaultEmail="bart@dobots.nl"
-
+bleAutomatorDir=$HOME/ble-automator
+crownstoneAddress="E7:20:19:25:6F:EC"
 
 logFullDir="${path}/logs"
 lastCommitEmail=$defaultEmail
@@ -83,6 +84,13 @@ for d in ${bluenetConfigsDir}/* ; do
 	res=$?
 	checkForError $res "firmware upload"
 	if [ "$?" != "0" ]; then exit 1; fi
+	
+	cd "$bleAutomatorDir"
+	./getTemperature.py -i hci1 -a $crownstoneAddress
+	res=$?
+	checkForError $res "read temperature"
+	if [ "$?" != "0" ]; then exit 1; fi
+	
 done
 
 exit 0
