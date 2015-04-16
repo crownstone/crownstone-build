@@ -11,6 +11,13 @@ defaultEmail="bart@dobots.nl"
 bleAutomatorDir=$HOME/ble-automator
 crownstoneAddress="E7:20:19:25:6F:EC"
 
+force=0
+if [ $# -gt 1 ]; then
+	if [ "$1" == "-f" ]; then
+		force=1
+	fi
+fi
+
 logFullDir="${path}/logs"
 lastCommitEmail=$defaultEmail
 function checkForError {
@@ -39,11 +46,14 @@ if [ -e "$path/lastCommit.sh" ]; then
 	source "$path/lastCommit.sh"
 	if [ "$lastCommitHash" == "$newCommitHash" ]; then
 		echo "No new commit found!"
-		exit 0
+		if [ $force == 0 ]; then
+			exit 0
+		fi
+	else
+		echo "lastCommitHash=${newCommitHash}" > "$path/lastCommit.sh"
+		echo "New commit found!"
 	fi
 fi
-echo "lastCommitHash=${newCommitHash}" > "$path/lastCommit.sh"
-echo "New commit found!"
 
 mkdir -p "$bluenetConfigsDir/default"
 cp "$bluenetDir/CMakeBuild.config.default" "$bluenetConfigsDir/default/CMakeBuild.config"
