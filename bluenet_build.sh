@@ -60,6 +60,7 @@ mkdir -p "$bluenetConfigsDir/default"
 cp "$bluenetDir/CMakeBuild.config.default" "$bluenetConfigsDir/default/CMakeBuild.config"
 for d in ${bluenetConfigsDir}/* ; do
 	# Set config dir
+	echo "Using "$d" as config dir"
 	export BLUENET_CONFIG_DIR="$d"
 	
 	# Remove build dir to be sure we start with a clean build
