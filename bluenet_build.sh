@@ -10,9 +10,10 @@ logDir=logs
 defaultEmail="bart@dobots.nl"
 bleAutomatorDir=$HOME/ble-automator
 crownstoneAddress="E7:20:19:25:6F:EC"
+bluetoothInterface="hci0"
 
 force=0
-if [ $# -gt 1 ]; then
+if [ $# -gt 0 ]; then
 	if [ "$1" == "-f" ]; then
 		force=1
 	fi
@@ -96,7 +97,7 @@ for d in ${bluenetConfigsDir}/* ; do
 	if [ "$?" != "0" ]; then exit 1; fi
 	
 	cd "$bleAutomatorDir"
-	./getTemperature.py -i hci1 -a $crownstoneAddress
+	./getTemperature.py -i $bluetoothInterface -a $crownstoneAddress
 	res=$?
 	checkForError $res "read temperature"
 	if [ "$?" != "0" ]; then exit 1; fi
