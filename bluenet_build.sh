@@ -96,6 +96,9 @@ for d in ${bluenetConfigsDir}/* ; do
 	checkForError $res "firmware upload"
 	if [ "$?" != "0" ]; then exit 1; fi
 	
+	# Give crownstone some time to boot
+	sleep 3
+	
 	cd "$bleAutomatorDir"
 	./getTemperature.py -i $bluetoothInterface -a $crownstoneAddress > "$logFullDir/read_temperature.log" 2> "$logFullDir/read_temperature_err.log"
 	res=$?
