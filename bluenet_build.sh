@@ -23,7 +23,7 @@ logFullDir="${path}/logs"
 lastCommitEmail=$defaultEmail
 function checkForError {
 	echo "$2 result: $1"
-	if [ "$1" != "0" ]; then
+	if [ "$1" != "0" -a $force == 0 ]; then
 		tar -C "$path" -cf "${path}/log.tar" "$logDir" >> /dev/null
 		p7zip "${path}/log.tar" >> /dev/null
 		mail -A "${path}/log.tar.7z" -s "crownstone build failed" $lastCommitEmail <<< "Failed: $2"
