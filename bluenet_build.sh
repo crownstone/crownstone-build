@@ -97,7 +97,7 @@ for d in ${bluenetConfigsDir}/* ; do
 	if [ "$?" != "0" ]; then exit 1; fi
 	
 	cd "$bleAutomatorDir"
-	./getTemperature.py -i $bluetoothInterface -a $crownstoneAddress
+	./getTemperature.py -i $bluetoothInterface -a $crownstoneAddress > "$logFullDir/read_temperature.log" 2> "$logFullDir/read_temperature_err.log"
 	res=$?
 	checkForError $res "read temperature"
 	if [ "$?" != "0" ]; then exit 1; fi
