@@ -33,7 +33,7 @@ function checkForError {
 	return 0
 }
 
-mkdir -p "logFullDir"
+mkdir -p "$logFullDir"
 
 cd "$bluenetDir"
 git pull
