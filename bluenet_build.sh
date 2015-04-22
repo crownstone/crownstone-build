@@ -24,9 +24,8 @@ lastCommitEmail=$defaultEmail
 function checkForError {
 	echo "$2 result: $1"
 	if [ "$1" != "0" -a $force == 0 ]; then
-		tar -C "$path" -cf "${path}/log.tar" "$logDir" >> /dev/null
-		p7zip "${path}/log.tar" >> /dev/null
-		mail -A "${path}/log.tar.7z" -s "crownstone build failed" $lastCommitEmail <<< "Failed: $2"
+		tar -C "$path" -zcf "${path}/log.tar.gz" "$logDir" >> /dev/null
+		mail -A "${path}/log.tar.gz" -s "crownstone build failed" $lastCommitEmail <<< "Failed: $2"
 		echo "Sent an e-mail to $lastCommitEmail"
 		return 1
 	fi
