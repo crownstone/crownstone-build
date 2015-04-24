@@ -74,13 +74,11 @@ for d in ${bluenetConfigsDir}/* ; do
 	# Build the code
 	cd "$bluenetDir/scripts"
 	./softdevice.sh build > "$logFullDir/softdevice_make.log" 2> "$logFullDir/softdevice_make_err.log"
-	res=$?
-	checkForError $res "softdevice build"
+	checkForError $? "softdevice build"
 	if [ "$?" != "0" ]; then exit 1; fi
 	
 	./firmware.sh build crownstone > "$logFullDir/firmware_make.log" 2> "$logFullDir/firmware_make_err.log"
-	res=$?
-	checkForError $res "firmware build"
+	checkForError $? "firmware build"
 	if [ "$?" != "0" ]; then exit 1; fi
 	
 	# Upload the code
@@ -92,19 +90,44 @@ for d in ${bluenetConfigsDir}/* ; do
 #	if [ "$?" != "0" ]; then exit 1; fi
 	
 	./firmware.sh upload crownstone > "$logFullDir/firmware_upload.log" 2> "$logFullDir/firmware_upload_err.log"
-	res=$?
-	checkForError $res "firmware upload"
+	checkForError $? "firmware upload"
 	if [ "$?" != "0" ]; then exit 1; fi
 	
 	# Give crownstone some time to boot
 	sleep 3
 	
+	# Read temperature
 	cd "$bleAutomatorDir"
 	./getTemperature.py -i $bluetoothInterface -a $crownstoneAddress > "$logFullDir/read_temperature.log" 2> "$logFullDir/read_temperature_err.log"
-	res=$?
-	checkForError $res "read temperature"
+	checkForError $? "read temperature"
 	if [ "$?" != "0" ]; then exit 1; fi
 	
+	
+	
+	# Write some config
+	cd "$bleAutomatorDir"
+	./writeConfig.py -i $bluetoothInterface -a $crownstoneAddress -t 3 -d 5 -n > "$logFullDir/readwrite_config.log" 2> "$logFullDir/readwrite_config_err.log"
+	checkForError $? "write config"
+	if [ "$?" != "0" ]; then exit 1; fi
+	
+	# Reset crownstone
+	./reset.py -i $bluetoothInterface -a $crownstoneAddress >> "$logFullDir/readwrite_config.log" 2>> "$logFullDir/readwrite_config_err.log"
+	checkForError $? "reset crownstone"
+	if [ "$?" != "0" ]; then exit 1; fi
+	sleep 5
+	
+	# Read config
+	./readConfig.py -i $bluetoothInterface -a $crownstoneAddress -t 3 -n >> "$logFullDir/readwrite_config.log" 2>> "$logFullDir/readwrite_config_err.log"
+	checkForError $? "read config"
+	if [ "$?" != "0" ]; then exit 1; fi
+	
+	# Compare written with read config
+	res=0
+	if [ $(grep -c "Value: 5" $logFullDir/readwrite_config.log) -ne 1 ]; then
+		res = 1
+	fi
+	checkForError $res "compare written with read config"
+	if [ "$?" != "0" ]; then exit 1; fi
 done
 
 exit 0
