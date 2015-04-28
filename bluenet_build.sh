@@ -84,9 +84,8 @@ for d in ${bluenetConfigsDir}/* ; do
 	# Upload the code
 	cd "$bluenetDir/scripts"
 	./softdevice.sh upload > "$logFullDir/softdevice_upload.log" 2> "$logFullDir/softdevice_upload_err.log"
-	res=$?
-	echo "softdevice upload result: $res"
-#	checkForError $res "softdevice upload"
+	echo "softdevice upload result: $?"
+#	checkForError $? "softdevice upload"
 #	if [ "$?" != "0" ]; then exit 1; fi
 	
 	./firmware.sh upload crownstone > "$logFullDir/firmware_upload.log" 2> "$logFullDir/firmware_upload_err.log"
@@ -112,8 +111,9 @@ for d in ${bluenetConfigsDir}/* ; do
 	
 	# Reset crownstone
 	./reset.py -i $bluetoothInterface -a $crownstoneAddress >> "$logFullDir/readwrite_config.log" 2>> "$logFullDir/readwrite_config_err.log"
-	checkForError $? "reset crownstone"
-	if [ "$?" != "0" ]; then exit 1; fi
+	echo "reset crownstoneresult: $?"
+#	checkForError $? "reset crownstone"
+#	if [ "$?" != "0" ]; then exit 1; fi
 	sleep 5
 	
 	# Read config
