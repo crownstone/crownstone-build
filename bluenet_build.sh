@@ -9,7 +9,7 @@ bluenetConfigsDir=$path/bluenet_configs
 logDir=logs
 defaultEmail="bart@dobots.nl"
 bleAutomatorDir=$HOME/ble-automator
-crownstoneAddress="E7:20:19:25:6F:EC"
+crownstoneAddress="C0:D1:8D:33:4E:29"
 bluetoothInterface="hci0"
 
 force=0
@@ -111,9 +111,9 @@ for d in ${bluenetConfigsDir}/* ; do
 	
 	# Reset crownstone
 	./reset.py -i $bluetoothInterface -a $crownstoneAddress >> "$logFullDir/readwrite_config.log" 2>> "$logFullDir/readwrite_config_err.log"
-	echo "reset crownstoneresult: $?"
-#	checkForError $? "reset crownstone"
-#	if [ "$?" != "0" ]; then exit 1; fi
+#	echo "reset crownstoneresult: $?"
+	checkForError $? "reset crownstone"
+	if [ "$?" != "0" ]; then exit 1; fi
 	sleep 5
 	
 	# Read config
