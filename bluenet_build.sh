@@ -124,7 +124,7 @@ for d in ${bluenetConfigsDir}/* ; do
 	# Compare written with read config
 	res=0
 	if [ $(grep -c "Value: 5" $logFullDir/readwrite_config.log) -ne 1 ]; then
-		res = 1
+		res=1
 	fi
 	checkForError $res "compare written with read config"
 	if [ "$?" != "0" ]; then exit 1; fi
