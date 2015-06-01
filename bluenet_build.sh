@@ -23,10 +23,12 @@ logFullDir="${path}/logs"
 lastCommitEmail=$defaultEmail
 function checkForError {
 	echo "$2 result: $1"
-	if [ "$1" != "0" -a $force == 0 ]; then
-		tar -C "$path" -zcf "${path}/log.tar.gz" "$logDir" >> /dev/null
-		mail -A "${path}/log.tar.gz" -s "crownstone build failed" $lastCommitEmail <<< "Failed: $2"
-		echo "Sent an e-mail to $lastCommitEmail"
+	if [ "$1" != "0" ]; then
+		if [ $force == 0 ]; then
+			tar -C "$path" -zcf "${path}/log.tar.gz" "$logDir" >> /dev/null
+			mail -A "${path}/log.tar.gz" -s "crownstone build failed" $lastCommitEmail <<< "Failed: $2"
+			echo "Sent an e-mail to $lastCommitEmail"
+		fi
 		return 1
 	fi
 	return 0
@@ -114,7 +116,7 @@ for d in ${bluenetConfigsDir}/* ; do
 #	echo "reset crownstoneresult: $?"
 	checkForError $? "reset crownstone"
 	if [ "$?" != "0" ]; then exit 1; fi
-	sleep 5
+	sleep 10
 	
 	# Read config
 	./readConfig.py -i $bluetoothInterface -a $crownstoneAddress -t 3 -n >> "$logFullDir/readwrite_config.log" 2>> "$logFullDir/readwrite_config_err.log"
