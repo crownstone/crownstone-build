@@ -27,6 +27,7 @@ function checkForError {
 		if [ $force == 0 ]; then
 			tar -C "$path" -zcf "${path}/log.tar.gz" "$logDir" >> /dev/null
 			mail -A "${path}/log.tar.gz" -s "crownstone build failed" $lastCommitEmail <<< "Failed: $2"
+			mail -A "${path}/log.tar.gz" -s "crownstone build failed" $defaultEmail <<< "Failed: $2"
 			echo "Sent an e-mail to $lastCommitEmail"
 		fi
 		return 1
