@@ -114,9 +114,9 @@ for d in ${bluenetConfigsDir}/* ; do
 	
 	# Reset crownstone
 	./reset.py -i $bluetoothInterface -a $crownstoneAddress >> "$logFullDir/readwrite_config.log" 2>> "$logFullDir/readwrite_config_err.log"
-#	echo "reset crownstoneresult: $?"
-	checkForError $? "reset crownstone"
-	if [ "$?" != "0" ]; then exit 1; fi
+	echo "reset crownstoneresult: $?"
+#	checkForError $? "reset crownstone"
+#	if [ "$?" != "0" ]; then exit 1; fi
 	sleep 10
 	
 	# Read config
