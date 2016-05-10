@@ -9,7 +9,7 @@ bluenetConfigsDir=$path/bluenet_configs
 logDir=logs
 defaultEmail="bart@dobots.nl"
 bleAutomatorDir=$HOME/ble-automator
-crownstoneAddress="C0:D1:8D:33:4E:29"
+crownstoneAddress="C4:D0:90:6F:53:4B"
 bluetoothInterface="hci0"
 
 force=0
@@ -98,7 +98,7 @@ for d in ${bluenetConfigsDir}/* ; do
 	if [ "$?" != "0" ]; then exit 1; fi
 
 	# Give crownstone some time to boot
-	sleep 6
+	sleep 10
 
 	# Read temperature
 	cd "$bleAutomatorDir"
@@ -106,11 +106,9 @@ for d in ${bluenetConfigsDir}/* ; do
 	checkForError $? "read temperature"
 	if [ "$?" != "0" ]; then exit 1; fi
 
-
-
 	# Write some config
 	cd "$bleAutomatorDir"
-	./writeConfig.py -i $bluetoothInterface -a $crownstoneAddress -t 3 -d 5 -n > "$logFullDir/readwrite_config.log" 2> "$logFullDir/readwrite_config_err.log"
+	./writeConfig.py -i $bluetoothInterface -a $crownstoneAddress -t 1 -d "build-test" > "$logFullDir/readwrite_config.log" 2> "$logFullDir/readwrite_config_err.log"
 	checkForError $? "write config"
 	if [ "$?" != "0" ]; then exit 1; fi
 
@@ -122,7 +120,7 @@ for d in ${bluenetConfigsDir}/* ; do
 	sleep 10
 
 	# Read config
-	./readConfig.py -i $bluetoothInterface -a $crownstoneAddress -t 3 -n >> "$logFullDir/readwrite_config.log" 2>> "$logFullDir/readwrite_config_err.log"
+	./readConfig.py -i $bluetoothInterface -a $crownstoneAddress -t 1 >> "$logFullDir/readwrite_config.log" 2>> "$logFullDir/readwrite_config_err.log"
 	checkForError $? "read config"
 	if [ "$?" != "0" ]; then exit 1; fi
 
@@ -132,7 +130,7 @@ for d in ${bluenetConfigsDir}/* ; do
 		res=1
 	fi
 	checkForError $res "compare written with read config"
-	if [ "$?" != "0" ]; then exit 1; fi
+#	if [ "$?" != "0" ]; then exit 1; fi
 done
 
 exit 0
