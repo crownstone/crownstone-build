@@ -73,8 +73,10 @@ for d in ${bluenetConfigsDir}/* ; do
 
 	# Clean the logs
 	cd "$logFullDir"
-	rm softdevice*
-	rm firmware*
+	rm softdevice_*.log
+	rm firmware_*.log
+	rm read_temperature*.log
+	rm readwrite_config*.log
 
 	# Build the code
 	cd "$bluenetDir/scripts"
