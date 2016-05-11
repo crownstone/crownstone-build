@@ -66,6 +66,7 @@ for d in ${bluenetConfigsDir}/* ; do
 	# Set config dir
 	echo "Using "$d" as config dir"
 	export BLUENET_CONFIG_DIR="$d"
+	export BLUENET_DIR="$bluenetDir"
 
 	# Remove build dir to be sure we start with a clean build
 	rm -r "$bluenetDir/build"
@@ -109,8 +110,9 @@ for d in ${bluenetConfigsDir}/* ; do
 	if [ "$?" != "0" ]; then exit 1; fi
 
 	# Write some config
+	CONFIG_VAL="build-test"
 	cd "$bleAutomatorDir"
-	./writeConfig.py -i $bluetoothInterface -a $crownstoneAddress -t 0 -d "build-test" > "$logFullDir/readwrite_config.log" 2> "$logFullDir/readwrite_config_err.log"
+	./writeConfig.py -i $bluetoothInterface -a $crownstoneAddress -t 0 -d $CONFIG_VAL > "$logFullDir/readwrite_config.log" 2> "$logFullDir/readwrite_config_err.log"
 	checkForError $? "write config"
 	if [ "$?" != "0" ]; then exit 1; fi
 
@@ -128,7 +130,7 @@ for d in ${bluenetConfigsDir}/* ; do
 
 	# Compare written with read config
 	res=0
-	if [ $(grep -c "Value: 5" $logFullDir/readwrite_config.log) -ne 1 ]; then
+	if [ $(grep -c "Value: ${$CONFIG_VAL}" $logFullDir/readwrite_config.log) -ne 1 ]; then
 		res=1
 	fi
 	checkForError $res "compare written with read config"
