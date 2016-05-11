@@ -108,7 +108,7 @@ for d in ${bluenetConfigsDir}/* ; do
 
 	# Write some config
 	cd "$bleAutomatorDir"
-	./writeConfig.py -i $bluetoothInterface -a $crownstoneAddress -t 1 -d "build-test" > "$logFullDir/readwrite_config.log" 2> "$logFullDir/readwrite_config_err.log"
+	./writeConfig.py -i $bluetoothInterface -a $crownstoneAddress -t 0 -d "build-test" > "$logFullDir/readwrite_config.log" 2> "$logFullDir/readwrite_config_err.log"
 	checkForError $? "write config"
 	if [ "$?" != "0" ]; then exit 1; fi
 
@@ -120,7 +120,7 @@ for d in ${bluenetConfigsDir}/* ; do
 	sleep 10
 
 	# Read config
-	./readConfig.py -i $bluetoothInterface -a $crownstoneAddress -t 1 >> "$logFullDir/readwrite_config.log" 2>> "$logFullDir/readwrite_config_err.log"
+	./readConfig.py -i $bluetoothInterface -a $crownstoneAddress -t 0 >> "$logFullDir/readwrite_config.log" 2>> "$logFullDir/readwrite_config_err.log"
 	checkForError $? "read config"
 	if [ "$?" != "0" ]; then exit 1; fi
 
